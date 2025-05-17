@@ -8,16 +8,25 @@ defmodule RaffleyWeb.Router do
     plug :put_root_layout, html: {RaffleyWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :spy
   end
 
   pipeline :api do
     plug :accepts, ["json"]
   end
 
+  def spy(conn, _opts) do
+    greetings = ~w(Hello Howdy Hola) |> Enum.random()
+    conn = assign(conn, :greetings, greetings)
+    # IO.inspect(conn)
+    conn
+  end
+
   scope "/", RaffleyWeb do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/rules", RuleController, :index
   end
 
   # Other scopes may use custom stacks.
@@ -26,7 +35,7 @@ defmodule RaffleyWeb.Router do
   # end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
-  if Application.compile_env(:raffley, :dev_routes) do
+  if Application.compile_env(:heads_up, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
     # it behind authentication and allow only admins to access it.
     # If your application does not have an admins-only section yet,
