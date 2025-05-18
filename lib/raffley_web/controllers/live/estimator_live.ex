@@ -4,6 +4,7 @@ defmodule RaffleyWeb.EstimatorLive do
   def mount(_params, _session, socket) do
     socket = assign(socket, ticket: 0, price: 3)
     IO.inspect(self(), label: "MOUNT")
+    Process.send_after(self(), :tick, 2000)
     # IO.inspect(socket)
     {:ok, socket}
   end
@@ -55,5 +56,10 @@ defmodule RaffleyWeb.EstimatorLive do
     socket = assign(socket, :price, String.to_integer(price))
 
     {:noreply, socket}
+  end
+
+  def handle_info(:tick, socket) do
+    Process.send_after(self(), :tick, 2000)
+    {:noreply, update(socket, :ticket, &(&1 + 10))}
   end
 end
