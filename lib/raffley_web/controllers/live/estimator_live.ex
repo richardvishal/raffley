@@ -3,11 +3,14 @@ defmodule RaffleyWeb.EstimatorLive do
 
   def mount(_params, _session, socket) do
     socket = assign(socket, ticket: 0, price: 3)
-    IO.inspect(socket)
+    IO.inspect(self(), label: "MOUNT")
+    # IO.inspect(socket)
     {:ok, socket}
   end
 
   def render(assigns) do
+    IO.inspect(self(), label: "RENDER")
+
     ~H"""
     <div class="estimator">
       <h1>
@@ -29,14 +32,28 @@ defmodule RaffleyWeb.EstimatorLive do
           ${@ticket * @price}
         </div>
       </section>
+
+      <form phx-submit="set-price">
+        <label>Ticket Price:</label>
+        <input type="text" name="price" value={@price} />
+      </form>
     </div>
     """
   end
 
   def handle_event("add", %{"quantity" => quantity} = _unsigned_params, socket) do
+    IO.inspect(self(), label: "EVENT")
+
     # socket = assign(socket, ticket: socket.assigns.ticket + 1)
     socket = update(socket, :ticket, &(&1 + String.to_integer(quantity)))
-    IO.inspect(socket)
+    # raise "💥"
+    # IO.inspect(socket)
+    {:noreply, socket}
+  end
+
+  def handle_event("set-price", %{"price" => price}, socket) do
+    socket = assign(socket, :price, String.to_integer(price))
+
     {:noreply, socket}
   end
 end
