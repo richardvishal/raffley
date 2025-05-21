@@ -1,5 +1,5 @@
 defmodule RaffleyWeb.CustomComponent do
-  use RaffleyWeb, :html
+  use Phoenix.Component
 
   attr :status, :atom, required: true
 
