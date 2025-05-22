@@ -2,10 +2,12 @@ defmodule RaffleyWeb.EstimatorLive do
   use RaffleyWeb, :live_view
 
   def mount(_params, _session, socket) do
-    socket = assign(socket, ticket: 0, price: 3)
+    socket = assign(socket, ticket: 0, price: 3, page_title: "Estimator")
     IO.inspect(self(), label: "MOUNT")
     Process.send_after(self(), :tick, 2000)
+
     # IO.inspect(socket)
+    # {:ok, socket, layout: {RaffleyWeb.Layouts, :simple}}
     {:ok, socket}
   end
 
