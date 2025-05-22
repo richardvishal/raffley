@@ -30,19 +30,21 @@ defmodule RaffleyWeb.RaffleLive.Index do
 
   def raffle_card(assigns) do
     ~H"""
-    <div class="card">
-      <img src={@raffle.image_path} />
+    <.link navigate={~p"/raffles/#{@raffle}"}>
+      <div class="card">
+        <img src={@raffle.image_path} />
 
-      <h2>
-        {@raffle.prize}
-      </h2>
-      <div class="details">
-        <div class="price">
-          ${@raffle.ticket_prize} / ticket
+        <h2>
+          {@raffle.prize}
+        </h2>
+        <div class="details">
+          <div class="price">
+            ${@raffle.ticket_prize} / ticket
+          </div>
+          <.badge status={@raffle.status} />
         </div>
-        <.badge status={@raffle.status} />
       </div>
-    </div>
+    </.link>
     """
   end
 end
