@@ -8,7 +8,7 @@ defmodule Raffley.Raffles do
       %Raffle{
         id: 1,
         prize: "Autographed Jersey",
-        ticket_prize: 2,
+        ticket_price: 2,
         status: :open,
         image_path: "/images/jersey.jpg",
         description: "Step up,  sports fans!"
@@ -16,7 +16,7 @@ defmodule Raffley.Raffles do
       %Raffle{
         id: 2,
         prize: "Coffee with a Yeti",
-        ticket_prize: 3,
+        ticket_price: 3,
         status: :upcoming,
         image_path: "/images/yeti-coffee.jpg",
         description: "A super-chill coffee date."
@@ -24,7 +24,7 @@ defmodule Raffley.Raffles do
       %Raffle{
         id: 3,
         prize: "Vintage Comic Book",
-        ticket_prize: 1,
+        ticket_price: 1,
         status: :closed,
         image_path: "/images/comic-book.jpg",
         description: "A race collectible!"

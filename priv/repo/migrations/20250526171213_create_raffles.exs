@@ -5,7 +5,7 @@ defmodule Raffley.Repo.Migrations.CreateRaffles do
     create table(:raffles) do
       add :prize, :string
       add :description, :text
-      add :ticket_prize, :integer
+      add :ticket_price, :integer
       add :status, :string
       add :image_path, :string
 

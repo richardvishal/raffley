@@ -6,7 +6,7 @@ defmodule Raffley.Raffles.Raffle do
     field :status, Ecto.Enum, values: [:upcoming, :open, :closed], default: :upcoming
     field :description, :string
     field :prize, :string
-    field :ticket_prize, :integer, default: 1
+    field :ticket_price, :integer, default: 1
     field :image_path, :string, default: "images/placeholder.jpg"
 
     timestamps(type: :utc_datetime)
@@ -15,7 +15,7 @@ defmodule Raffley.Raffles.Raffle do
   @doc false
   def changeset(raffle, attrs) do
     raffle
-    |> cast(attrs, [:prize, :description, :ticket_prize, :status, :image_path])
-    |> validate_required([:prize, :description, :ticket_prize, :status, :image_path])
+    |> cast(attrs, [:prize, :description, :ticket_price, :status, :image_path])
+    |> validate_required([:prize, :description, :ticket_price, :status, :image_path])
   end
 end

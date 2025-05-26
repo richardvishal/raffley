@@ -30,7 +30,7 @@ defmodule RaffleyWeb.RaffleLive.Show do
               {@raffle.prize}
             </h2>
             <div class="prize">
-              ${@raffle.ticket_prize} / ticket
+              ${@raffle.ticket_price} / ticket
             </div>
           </header>
           <div class="description">
