@@ -1,9 +1,7 @@
-defmodule Raffley.Raffle do
-  defstruct [:id, :prize, :ticket_prize, :status, :image_path, :description]
-end
+
 
 defmodule Raffley.Raffles do
-  alias Raffley.Raffle
+  alias Raffley.Raffles.Raffle
 
   def list_raffles do
     [
