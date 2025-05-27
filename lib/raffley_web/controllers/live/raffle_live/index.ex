@@ -3,16 +3,18 @@ defmodule RaffleyWeb.RaffleLive.Index do
   alias Raffley.Raffles
 
   def mount(_params, _session, socket) do
-    socket = stream(socket, :raffles, Raffles.list_raffles())
-    IO.inspect(socket.assigns.streams, label: "MOUNT")
+    # IO.inspect(socket.assigns.streams, label: "MOUNT")
 
-    socket =
-      attach_hook(socket, :log_stream, :after_render, fn
-        socket ->
-          # inspect the stream
-          IO.inspect(socket.assigns.streams, label: "After Render")
-          socket
-      end)
+    # form = to_form(%{"q" => "", "status" => "open", "sort_by" => ""})
+    socket = socket |> stream(:raffles, Raffles.list_raffles()) |> assign(:form, to_form(%{}))
+
+    # socket =
+    #   attach_hook(socket, :log_stream, :after_render, fn
+    #     socket ->
+    #       # inspect the stream
+    #       IO.inspect(socket.assigns.streams, label: "After Render")
+    #       socket
+    #   end)
 
     {:ok, socket}
   end
@@ -29,10 +31,32 @@ defmodule RaffleyWeb.RaffleLive.Index do
           Any Guesses?
         </:details>
       </.banner>
+      <.filter_form form={@form} />
+
       <div class="raffles" id="raffles" phx-update="stream">
         <.raffle_card :for={{dom_id, raffle} <- @streams.raffles} raffle={raffle} id={dom_id} />
       </div>
     </div>
+    """
+  end
+
+  def filter_form(assigns) do
+    ~H"""
+    <.form for={@form}>
+      <.input field={@form[:q]} placeholder="Search..." />
+      <.input
+        field={@form[:status]}
+        type="select"
+        options={[:upcoming, :open, :closed]}
+        prompt="Status"
+      />
+      <.input
+        field={@form[:sort_by]}
+        type="select"
+        options={[:prize, :ticket_price]}
+        prompt="Sort By"
+      />
+    </.form>
     """
   end
 
