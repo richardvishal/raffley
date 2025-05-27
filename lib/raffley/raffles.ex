@@ -1,6 +1,7 @@
 defmodule Raffley.Raffles do
   alias Raffley.Raffles.Raffle
   alias Raffley.Repo
+  import Ecto.Query
 
   def list_raffles do
     Repo.all(Raffle)
@@ -11,6 +12,11 @@ defmodule Raffley.Raffles do
   end
 
   def featured_raffles(raffle) do
-    list_raffles() |> List.delete(raffle)
+    Raffle
+    |> where(status: :open)
+    |> where([r], r.id != ^raffle.id)
+    |> order_by(desc: :ticket_price)
+    |> limit(3)
+    |> Repo.all()
   end
 end
