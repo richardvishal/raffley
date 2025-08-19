@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: raffley_dev
+    
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  
+
+  raffley:
+    build: .
+    container_name: raffley
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+
+
+
+volumes:
+  pgdata:
