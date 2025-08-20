@@ -6,7 +6,6 @@ defmodule RaffleyWeb.RaffleLive.Index do
     # IO.inspect(socket.assigns.streams, label: "MOUNT")
 
     # form = to_form(%{"q" => "", "status" => "open", "sort_by" => ""})
-    socket = socket |> stream(:raffles, Raffles.list_raffles()) |> assign(:form, to_form(%{}))
 
     # socket =
     #   attach_hook(socket, :log_stream, :after_render, fn
@@ -17,6 +16,14 @@ defmodule RaffleyWeb.RaffleLive.Index do
     #   end)
 
     {:ok, socket}
+  end
+
+  def handle_params(params, _uri, socket) do
+    socket =
+      assign(socket, :form, to_form(params))
+      |> stream(:raffles, Raffles.filter_raffles(params), reset: true)
+
+    {:noreply, socket}
   end
 
   def render(assigns) do
@@ -63,6 +70,8 @@ defmodule RaffleyWeb.RaffleLive.Index do
         ]}
         prompt="Sort By"
       />
+
+      <.link navigate={~p"/raffles"}>Reset Filters</.link>
     </.form>
     """
   end
@@ -92,9 +101,10 @@ defmodule RaffleyWeb.RaffleLive.Index do
 
   def handle_event("filter", params, socket) do
     # IO.inspect(params, label: "FILTER PARAMS")
-    socket =
-      assign(socket, :form, to_form(params))
-      |> stream(:raffles, Raffles.filter_raffles(params), reset: true)
+
+    params = Map.take(params, ["q", "status", "sort_by"]) |> Map.reject(fn {_, v} -> v == "" end)
+
+    socket = push_navigate(socket, to: ~p"/raffles/?#{params}")
 
     {:noreply, socket}
   end
