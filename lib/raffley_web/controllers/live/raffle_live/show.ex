@@ -13,7 +13,13 @@ defmodule RaffleyWeb.RaffleLive.Show do
       socket
       |> assign(:raffle, raffle)
       |> assign(:page_title, raffle.prize)
-      |> assign(:featured_raffles, Raffles.featured_raffles(raffle))
+      |> assign_async(
+        :featured_raffles,
+        fn ->
+          {:ok, %{featured_raffles: Raffles.featured_raffles(raffle)}}
+          # {:error, "Failed to load"}
+        end
+      )
 
     {:noreply, socket}
   end
@@ -54,14 +60,27 @@ defmodule RaffleyWeb.RaffleLive.Show do
       <h4>
         Featured Raffles
       </h4>
-      <ul class="raffles">
-        <li :for={raffle <- @raffles}>
-          <.link navigate={~p"/raffles/#{raffle}"}>
-            <img src={raffle.image_path} alt="" />
-            {raffle.prize}
-          </.link>
-        </li>
-      </ul>
+      <.async_result :let={result} assign={@raffles}>
+        <:loading>
+          <div class="loading">
+            <div class="spinner"></div>
+          </div>
+        </:loading>
+
+        <:failed :let={{:error, message}}>
+          <div class="failed">
+            Uhh oh! {message}
+          </div>
+        </:failed>
+        <ul class="raffles">
+          <li :for={raffle <- result}>
+            <.link navigate={~p"/raffles/#{raffle}"}>
+              <img src={raffle.image_path} alt="" />
+              {raffle.prize}
+            </.link>
+          </li>
+        </ul>
+      </.async_result>
     </section>
     """
   end
