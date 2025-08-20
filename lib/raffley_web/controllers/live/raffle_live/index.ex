@@ -34,6 +34,9 @@ defmodule RaffleyWeb.RaffleLive.Index do
       <.filter_form form={@form} />
 
       <div class="raffles" id="raffles" phx-update="stream">
+        <div id="empty" class="no-result only:block hidden">
+          No raffles found. Try changing your filters.
+        </div>
         <.raffle_card :for={{dom_id, raffle} <- @streams.raffles} raffle={raffle} id={dom_id} />
       </div>
     </div>
