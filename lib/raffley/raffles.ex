@@ -7,10 +7,10 @@ defmodule Raffley.Raffles do
     Repo.all(Raffle)
   end
 
-  def filter_raffles do
+  def filter_raffles(filter) do
     Raffle
-    |> where(status: :closed)
-    |> where([r], ilike(r.prize, "%gourmet%"))
+    |> where(status: ^filter["status"])
+    |> where([r], ilike(r.prize, ^"%#{filter["q"]}%"))
     |> order_by(desc: :prize)
     |> Repo.all()
   end
