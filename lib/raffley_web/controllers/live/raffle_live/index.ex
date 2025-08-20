@@ -3,7 +3,7 @@ defmodule RaffleyWeb.RaffleLive.Index do
   alias Raffley.Raffles
 
   def mount(_params, _session, socket) do
-    # IO.inspect(socket.assigns.streams, label: "MOUNT")
+    # IO.inspect(self(), label: "MOUNT")
 
     # form = to_form(%{"q" => "", "status" => "open", "sort_by" => ""})
 
@@ -71,7 +71,7 @@ defmodule RaffleyWeb.RaffleLive.Index do
         prompt="Sort By"
       />
 
-      <.link navigate={~p"/raffles"}>Reset Filters</.link>
+      <.link patch={~p"/raffles"}>Reset Filters</.link>
     </.form>
     """
   end
@@ -104,7 +104,7 @@ defmodule RaffleyWeb.RaffleLive.Index do
 
     params = Map.take(params, ["q", "status", "sort_by"]) |> Map.reject(fn {_, v} -> v == "" end)
 
-    socket = push_navigate(socket, to: ~p"/raffles/?#{params}")
+    socket = push_patch(socket, to: ~p"/raffles/?#{params}")
 
     {:noreply, socket}
   end
