@@ -27,7 +27,7 @@ defmodule RaffleyWeb.AdminRaffleLive.Form do
       <.input field={@form[:description]} type="textarea" label="Description" />
       <.input field={@form[:image_path]} label="Image Path" />
       <:actions>
-        <.button>Save Raffle</.button>
+        <.button phx-disable-with="Saving...">Save Raffle</.button>
       </:actions>
     </.simple_form>
     <.back navigate={~p"/admin/raffles"}>Back</.back>
