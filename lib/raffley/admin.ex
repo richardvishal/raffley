@@ -19,4 +19,6 @@ defmodule Raffley.Admin do
     raffle
     |> Raffle.changeset(attrs)
   end
+
+  def get_raffle!(id), do: Repo.get!(Raffle, id)
 end
