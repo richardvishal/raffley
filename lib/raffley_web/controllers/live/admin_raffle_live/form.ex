@@ -4,7 +4,7 @@ defmodule RaffleyWeb.AdminRaffleLive.Form do
   alias Raffley.Raffles.Raffle
 
   def mount(_params, _session, socket) do
-    changeset = Raffle.changeset(%Raffle{}, %{})
+    changeset = Admin.change_raffle(%Raffle{})
 
     socket =
       assign(socket, :page_title, "New Raffle") |> assign(:form, to_form(changeset))
@@ -17,7 +17,7 @@ defmodule RaffleyWeb.AdminRaffleLive.Form do
     <.header>
       {@page_title}
     </.header>
-    <.simple_form for={@form} id="raffle-form" phx-submit="save">
+    <.simple_form for={@form} id="raffle-form" phx-submit="save" phx-change="validate">
       <.input field={@form[:prize]} label="Prize" />
       <.input field={@form[:ticket_price]} label="Ticket Price" />
       <.input
@@ -27,7 +27,7 @@ defmodule RaffleyWeb.AdminRaffleLive.Form do
         options={[:upcoming, :open, :closed]}
         label="Status"
       />
-      <.input field={@form[:description]} type="textarea" label="Description" />
+      <.input field={@form[:description]} type="textarea" label="Description" phx-debounce="blur" />
       <.input field={@form[:image_path]} label="Image Path" />
       <:actions>
         <.button phx-disable-with="Saving...">Save Raffle</.button>
@@ -35,6 +35,12 @@ defmodule RaffleyWeb.AdminRaffleLive.Form do
     </.simple_form>
     <.back navigate={~p"/admin/raffles"}>Back</.back>
     """
+  end
+
+  def handle_event("validate", %{"raffle" => raffle_params}, socket) do
+    changeset = Admin.change_raffle(%Raffle{}, raffle_params)
+    socket = assign(socket, form: to_form(changeset, action: :validate))
+    {:noreply, socket}
   end
 
   def handle_event("save", %{"raffle" => raffle_params}, socket) do
