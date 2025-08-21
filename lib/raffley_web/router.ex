@@ -33,7 +33,7 @@ defmodule RaffleyWeb.Router do
     live "/raffles", RaffleLive.Index
     live "/raffles/:id", RaffleLive.Show
 
-    live "/admin/raffles", Admin.RaffleLive.Index
+    live "/admin/raffles", AdminRaffleLive.Index
 
   end
 

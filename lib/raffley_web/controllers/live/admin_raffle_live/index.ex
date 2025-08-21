@@ -1,4 +1,4 @@
-defmodule RaffleyWeb.Admin.RaffleLive.Index do
+defmodule RaffleyWeb.AdminRaffleLive.Index do
   use RaffleyWeb, :live_view
   alias Raffley.Admin
   import RaffleyWeb.CustomComponent
