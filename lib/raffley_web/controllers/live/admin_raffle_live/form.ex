@@ -25,11 +25,11 @@ defmodule RaffleyWeb.AdminRaffleLive.Form do
       />
       <.input field={@form[:description]} type="textarea" label="Description" />
       <.input field={@form[:image_path]} label="Image Path" />
-      <.button>Save</.button>
       <:actions>
-        <.back navigate={~p"/admin/raffles"}>Back</.back>
+        <.button>Save Raffle</.button>
       </:actions>
     </.simple_form>
+    <.back navigate={~p"/admin/raffles"}>Back</.back>
     """
   end
 end
