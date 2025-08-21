@@ -1,5 +1,6 @@
 defmodule RaffleyWeb.AdminRaffleLive.Form do
   use RaffleyWeb, :live_view
+  alias Raffley.Admin
 
   def mount(_params, _session, socket) do
     socket =
@@ -13,7 +14,7 @@ defmodule RaffleyWeb.AdminRaffleLive.Form do
     <.header>
       {@page_title}
     </.header>
-    <.simple_form for={@form} id="raffle-form">
+    <.simple_form for={@form} id="raffle-form" phx-submit="save">
       <.input field={@form[:prize]} label="Prize" />
       <.input field={@form[:ticket_price]} label="Ticket Price" />
       <.input
@@ -31,5 +32,11 @@ defmodule RaffleyWeb.AdminRaffleLive.Form do
     </.simple_form>
     <.back navigate={~p"/admin/raffles"}>Back</.back>
     """
+  end
+
+  def handle_event("save", %{"raffle" => raffle_params}, socket) do
+    Admin.create_raffle(raffle_params)
+    socket = push_navigate(socket, to: ~p"/admin/raffles")
+    {:noreply, socket}
   end
 end
