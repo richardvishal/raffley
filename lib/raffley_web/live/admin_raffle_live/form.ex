@@ -2,12 +2,18 @@ defmodule RaffleyWeb.AdminRaffleLive.Form do
   use RaffleyWeb, :live_view
   alias Raffley.Admin
   alias Raffley.Raffles.Raffle
+  alias Raffley.Charities
 
   def mount(params, _session, socket) do
-    {:ok, apply_action(socket.assigns.live_action, params, socket)}
+    socket =
+      socket
+      |> assign(:charity_options, Charities.charities_with_name_and_id())
+      |> apply_action(socket.assigns.live_action, params)
+
+    {:ok, socket}
   end
 
-  def apply_action(:new, _params, socket) do
+  def apply_action(socket, :new, _params) do
     raffle = %Raffle{}
     changeset = Admin.change_raffle(raffle)
 
@@ -16,7 +22,7 @@ defmodule RaffleyWeb.AdminRaffleLive.Form do
     |> assign(:raffle, raffle)
   end
 
-  def apply_action(:edit, %{"id" => id}, socket) do
+  def apply_action(socket, :edit, %{"id" => id}) do
     raffle = Admin.get_raffle!(id)
     changeset = Admin.change_raffle(raffle)
 
@@ -40,6 +46,14 @@ defmodule RaffleyWeb.AdminRaffleLive.Form do
         options={[:upcoming, :open, :closed]}
         label="Status"
       />
+      <.input
+        field={@form[:charity_id]}
+        type="select"
+        prompt="Select Charity"
+        options={@charity_options}
+        label="Status"
+      />
+
       <.input field={@form[:description]} type="textarea" label="Description" phx-debounce="blur" />
       <.input field={@form[:image_path]} label="Image Path" />
       <:actions>
@@ -75,6 +89,7 @@ defmodule RaffleyWeb.AdminRaffleLive.Form do
         {:noreply, socket}
     end
   end
+
   defp save_raffle(:edit, params, socket) do
     case Admin.update_raffle(socket.assigns.raffle, params) do
       {:ok, _raffle} ->

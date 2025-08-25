@@ -38,6 +38,23 @@ defmodule Raffley.Charities do
   def get_charity!(id), do: Repo.get!(Charity, id)
 
   @doc """
+  Gets a single charity and load it's raffles.
+
+  Raises `Ecto.NoResultsError` if the Charity does not exist.
+
+  ## Examples
+
+      iex> get_charity_with_raffles!(123)
+      %Charity{}
+
+      iex> get_charity_with_raffles!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+
+  def get_charity_with_raffles!(id), do: get_charity!(id) |> Repo.preload(:raffles)
+
+  @doc """
   Creates a charity.
 
   ## Examples
@@ -100,5 +117,12 @@ defmodule Raffley.Charities do
   """
   def change_charity(%Charity{} = charity, attrs \\ %{}) do
     Charity.changeset(charity, attrs)
+  end
+
+  def charities_with_name_and_id do
+    Charity
+    |> order_by([c], c.name)
+    |> select([c], {c.name, c.id})
+    |> Repo.all()
   end
 end

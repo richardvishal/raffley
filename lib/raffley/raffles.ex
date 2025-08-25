@@ -12,6 +12,7 @@ defmodule Raffley.Raffles do
     |> with_status(filter["status"])
     |> search_by(filter["q"])
     |> sort_by(filter["sort_by"])
+    |> preload(:charity)
     |> Repo.all()
   end
 
@@ -41,7 +42,7 @@ defmodule Raffley.Raffles do
   end
 
   def get_raffle!(id) do
-    Repo.get!(Raffle, id)
+    Repo.get!(Raffle, id) |> Repo.preload(:charity)
   end
 
   def featured_raffles(raffle) do
