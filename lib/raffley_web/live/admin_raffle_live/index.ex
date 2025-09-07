@@ -2,6 +2,7 @@ defmodule RaffleyWeb.AdminRaffleLive.Index do
   use RaffleyWeb, :live_view
   alias Raffley.Admin
   import RaffleyWeb.CustomComponent
+  on_mount {RaffleyWeb.UserAuth, :ensure_authenticated}
 
   def mount(_params, _session, socket) do
     socket =
@@ -29,7 +30,7 @@ defmodule RaffleyWeb.AdminRaffleLive.Index do
         Toggle Joke
       </.button>
       <div id="joke" class="joke hidden">
-        What's the tree's favorite drink?
+        What's the tree's favorite drink, {@current_user.username}?
       </div>
       <.header class="mt-6 ">
         {@page_title}

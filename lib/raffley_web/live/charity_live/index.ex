@@ -2,41 +2,42 @@ defmodule RaffleyWeb.CharityLive.Index do
   use RaffleyWeb, :live_view
 
   alias Raffley.Charities
+  on_mount {RaffleyWeb.UserAuth, :ensure_authenticated}
 
   @impl true
   def render(assigns) do
     ~H"""
-      <.header>
-        Listing Charities
-        <:actions>
-          <.link class="button" navigate={~p"/charities/new"}>
-            <.icon name="hero-plus" /> New Charity
-          </.link>
-        </:actions>
-      </.header>
+    <.header>
+      Listing Charities
+      <:actions>
+        <.link class="button" navigate={~p"/charities/new"}>
+          <.icon name="hero-plus" /> New Charity
+        </.link>
+      </:actions>
+    </.header>
 
-      <.table
-        id="charities"
-        rows={@streams.charities}
-        row_click={fn {_id, charity} -> JS.navigate(~p"/charities/#{charity}") end}
-      >
-        <:col :let={{_id, charity}} label="Name">{charity.name}</:col>
-        <:col :let={{_id, charity}} label="Slug">{charity.slug}</:col>
-        <:action :let={{_id, charity}}>
-          <div class="sr-only">
-            <.link navigate={~p"/charities/#{charity}"}>Show</.link>
-          </div>
-          <.link navigate={~p"/charities/#{charity}/edit"}>Edit</.link>
-        </:action>
-        <:action :let={{id, charity}}>
-          <.link
-            phx-click={JS.push("delete", value: %{id: charity.id}) |> hide("##{id}")}
-            data-confirm="Are you sure?"
-          >
-            Delete
-          </.link>
-        </:action>
-      </.table>
+    <.table
+      id="charities"
+      rows={@streams.charities}
+      row_click={fn {_id, charity} -> JS.navigate(~p"/charities/#{charity}") end}
+    >
+      <:col :let={{_id, charity}} label="Name">{charity.name}</:col>
+      <:col :let={{_id, charity}} label="Slug">{charity.slug}</:col>
+      <:action :let={{_id, charity}}>
+        <div class="sr-only">
+          <.link navigate={~p"/charities/#{charity}"}>Show</.link>
+        </div>
+        <.link navigate={~p"/charities/#{charity}/edit"}>Edit</.link>
+      </:action>
+      <:action :let={{id, charity}}>
+        <.link
+          phx-click={JS.push("delete", value: %{id: charity.id}) |> hide("##{id}")}
+          data-confirm="Are you sure?"
+        >
+          Delete
+        </.link>
+      </:action>
+    </.table>
     """
   end
 
