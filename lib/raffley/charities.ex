@@ -125,4 +125,11 @@ defmodule Raffley.Charities do
     |> select([c], {c.name, c.id})
     |> Repo.all()
   end
+
+  def charities_with_name_and_slugs do
+    Charity
+    |> order_by([c], c.name)
+    |> select([c], {c.name, c.slug})
+    |> Repo.all()
+  end
 end
