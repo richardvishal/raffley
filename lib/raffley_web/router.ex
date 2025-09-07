@@ -41,7 +41,6 @@ defmodule RaffleyWeb.Router do
     live "/charities/new", CharityLive.Form, :new
     live "/charities/:id", CharityLive.Show, :show
     live "/charities/:id/edit", CharityLive.Form, :edit
-
   end
 
   # Other scopes may use custom stacks.
@@ -49,7 +48,7 @@ defmodule RaffleyWeb.Router do
     pipe_through :api
     get "/raffles", RaffleController, :index
     get "/raffles/:id", RaffleController, :show
-
+    post "/raffles", RaffleController, :create
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
