@@ -2,7 +2,6 @@ defmodule RaffleyWeb.CharityLive.Index do
   use RaffleyWeb, :live_view
 
   alias Raffley.Charities
-  on_mount {RaffleyWeb.UserAuth, :ensure_authenticated}
 
   @impl true
   def render(assigns) do

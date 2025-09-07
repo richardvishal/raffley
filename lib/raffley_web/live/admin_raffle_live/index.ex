@@ -2,7 +2,6 @@ defmodule RaffleyWeb.AdminRaffleLive.Index do
   use RaffleyWeb, :live_view
   alias Raffley.Admin
   import RaffleyWeb.CustomComponent
-  on_mount {RaffleyWeb.UserAuth, :ensure_authenticated}
 
   def mount(_params, _session, socket) do
     socket =
