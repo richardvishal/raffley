@@ -1,4 +1,4 @@
-defmodule Raffley.Repo.Migrations.CreateUsernameToUsers do
+defmodule Raffley.Repo.Migrations.AddUsernameToUsers do
   use Ecto.Migration
 
   def change do
