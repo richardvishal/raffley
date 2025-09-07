@@ -1,8 +1,14 @@
 defmodule RaffleyWeb.RaffleLive.Show do
   use RaffleyWeb, :live_view
   alias Raffley.Raffles
+  alias Raffley.Tickets.Ticket
+  alias Raffley.Tickets
+
+  on_mount {RaffleyWeb.UserAuth, :mount_current_user}
 
   def mount(_params, _session, socket) do
+    socket = socket |> assign(:form, to_form(Tickets.change_ticket(%Ticket{})))
+
     {:ok, socket}
   end
 
@@ -52,12 +58,31 @@ defmodule RaffleyWeb.RaffleLive.Show do
         </section>
       </div>
       <div class="activity">
-        <div class="left"></div>
+        <div class="left">
+          <div :if={@raffle.status == :open}>
+            <%= if @current_user do %>
+              <.ticket_forms form={@form} />
+            <% else %>
+              <.link class="button" navigate={~p"/users/log-in"}>Log in to get a ticket</.link>
+            <% end %>
+          </div>
+        </div>
         <div class="right">
           <.featured_raffles raffles={@featured_raffles} />
         </div>
       </div>
     </div>
+    """
+  end
+
+  defp ticket_form(assigns) do
+    ~H"""
+    <.form for={@form} id="ticket-form" phx-change="validate" phx-submit="save">
+      <.input field={@form[:comments]} placeholder="Comments..." autofocus />
+      <.button>
+        Get a Ticket
+      </.button>
+    </.form>
     """
   end
 
@@ -90,5 +115,28 @@ defmodule RaffleyWeb.RaffleLive.Show do
       </.async_result>
     </section>
     """
+  end
+
+  def handle_event("validate", %{"ticket" => ticket_params}, socket) do
+    socket =
+      assign(socket,
+        form: to_form(Tickets.change_ticket(%Ticket{}, ticket_params), action: :validate)
+      )
+
+    {:noreply, socket}
+  end
+
+  def handle_event("save", %{"ticket" => ticket_params}, socket) do
+    %{raffle: raffle, current_user: user} = socket.assigns
+
+    case Tickets.create_ticket(raffle, user, ticket_params) do
+      {:ok, _ticket} ->
+        socket = assign(socket, form: to_form(Tickets.change_ticket(%Ticket{})))
+        {:noreply, socket}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        socket = assign(socket, form: to_form(changeset))
+        {:noreply, socket}
+    end
   end
 end
