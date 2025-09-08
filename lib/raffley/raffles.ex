@@ -4,6 +4,14 @@ defmodule Raffley.Raffles do
   alias Raffley.Repo
   import Ecto.Query
 
+  def subscribe(raffle_id) do
+    Phoenix.PubSub.subscribe(Raffley.PubSub, "raffles:#{raffle_id}")
+  end
+
+  def broadcast(raffle_id, message) do
+    Phoenix.PubSub.broadcast(Raffley.PubSub, "raffles:#{raffle_id}", message)
+  end
+
   def list_raffles do
     Repo.all(Raffle)
   end

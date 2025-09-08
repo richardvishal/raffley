@@ -4,6 +4,7 @@ defmodule Raffley.Tickets do
   """
 
   import Ecto.Query, warn: false
+  alias Raffley.Raffles
   alias Raffley.Repo
 
   alias Raffley.Tickets.Ticket
@@ -53,6 +54,14 @@ defmodule Raffley.Tickets do
     %Ticket{user: user, raffle: raffle, price: raffle.ticket_price}
     |> Ticket.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, ticket} ->
+        Raffles.broadcast(raffle.id, {:new_ticket, ticket})
+        {:ok, ticket}
+
+      {:error, _} = error ->
+        error
+    end
   end
 
   @doc """

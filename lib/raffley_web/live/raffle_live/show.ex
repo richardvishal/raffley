@@ -13,6 +13,10 @@ defmodule RaffleyWeb.RaffleLive.Show do
   end
 
   def handle_params(%{"id" => id}, _uri, socket) do
+    if connected?(socket) do
+      Raffles.subscribe(id)
+    end
+
     raffle = Raffles.get_raffle!(id)
     tickets = Raffles.get_raffle_tickets(raffle)
 
@@ -165,13 +169,10 @@ defmodule RaffleyWeb.RaffleLive.Show do
     %{raffle: raffle, current_user: user} = socket.assigns
 
     case Tickets.create_ticket(raffle, user, ticket_params) do
-      {:ok, ticket} ->
+      {:ok, _ticket} ->
         socket =
           socket
           |> assign(form: to_form(Tickets.change_ticket(%Ticket{})))
-          |> stream_insert(:tickets, ticket, at: 0)
-          |> update(:ticket_count, &(&1 + 1))
-          |> update(:ticket_sum, &(&1 + ticket.price))
 
         {:noreply, socket}
 
@@ -179,5 +180,19 @@ defmodule RaffleyWeb.RaffleLive.Show do
         socket = assign(socket, form: to_form(changeset))
         {:noreply, socket}
     end
+  end
+
+  def handle_info({:new_ticket, ticket}, socket) do
+    socket =
+      socket
+      |> stream_insert(:tickets, ticket, at: 0)
+      |> update(:ticket_count, &(&1 + 1))
+      |> update(:ticket_sum, &(&1 + ticket.price))
+
+    {:noreply, socket}
+  end
+
+  def handle_info({:raffle_updated, raffle}, socket) do
+    {:noreply, assign(socket, :raffle, raffle)}
   end
 end
