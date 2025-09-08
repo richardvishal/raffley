@@ -61,7 +61,7 @@ defmodule RaffleyWeb.RaffleLive.Show do
         <div class="left">
           <div :if={@raffle.status == :open}>
             <%= if @current_user do %>
-              <.ticket_forms form={@form} />
+              <.ticket_form form={@form} />
             <% else %>
               <.link class="button" navigate={~p"/users/log-in"}>Log in to get a ticket</.link>
             <% end %>
