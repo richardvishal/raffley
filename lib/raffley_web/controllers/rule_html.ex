@@ -5,7 +5,7 @@ defmodule RaffleyWeb.RuleHTML do
   def show(assigns) do
     ~H"""
     <div class="rules">
-      <h1>{@greetings}  Don't forget...</h1>
+      <h1>{@greetings} Don't forget...</h1>
       <p>{@rule.text}</p>
     </div>
     """

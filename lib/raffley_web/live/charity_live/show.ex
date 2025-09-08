@@ -24,7 +24,7 @@ defmodule RaffleyWeb.CharityLive.Show do
       <:item title="Slug">{@charity.slug}</:item>
     </.list>
     <section class="mt-12">
-    <h4>Raffles</h4>
+      <h4>Raffles</h4>
       <ul class="raffles">
         <li :for={raffle <- @charity.raffles}>
           <.link navigate={~p"/raffles/#{raffle}"}>
