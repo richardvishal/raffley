@@ -14,11 +14,15 @@ defmodule RaffleyWeb.RaffleLive.Show do
 
   def handle_params(%{"id" => id}, _uri, socket) do
     raffle = Raffles.get_raffle!(id)
+    tickets = Raffles.get_raffle_tickets(raffle)
 
     socket =
       socket
       |> assign(:raffle, raffle)
       |> assign(:page_title, raffle.prize)
+      |> stream(:tickets, tickets)
+      |> assign(:ticket_count, Enum.count(tickets))
+      |> assign(:ticket_sum, Enum.sum_by(tickets, & &1.price))
       |> assign_async(
         :featured_raffles,
         fn ->
@@ -51,6 +55,9 @@ defmodule RaffleyWeb.RaffleLive.Show do
               ${@raffle.ticket_price} / ticket
             </div>
           </header>
+          <div class="totals">
+            {@ticket_count} Tickets Sold &bull; ${@ticket_sum} Raised
+          </div>
 
           <div class="description">
             {@raffle.description}
@@ -66,6 +73,9 @@ defmodule RaffleyWeb.RaffleLive.Show do
               <.link class="button" navigate={~p"/users/log-in"}>Log in to get a ticket</.link>
             <% end %>
           </div>
+          <div id="tickets" phx-update="stream">
+            <.tickets :for={{dom_id, ticket} <- @streams.tickets} ticket={ticket} id={dom_id} />
+          </div>
         </div>
         <div class="right">
           <.featured_raffles raffles={@featured_raffles} />
@@ -78,7 +88,7 @@ defmodule RaffleyWeb.RaffleLive.Show do
   defp ticket_form(assigns) do
     ~H"""
     <.form for={@form} id="ticket-form" phx-change="validate" phx-submit="save">
-      <.input field={@form[:comments]} placeholder="Comments..." autofocus />
+      <.input field={@form[:comment]} placeholder="Comments..." autofocus />
       <.button>
         Get a Ticket
       </.button>
@@ -117,6 +127,31 @@ defmodule RaffleyWeb.RaffleLive.Show do
     """
   end
 
+  attr :id, :string, required: true
+  attr :ticket, Ticket, required: true
+
+  defp tickets(assigns) do
+    ~H"""
+    <div class="ticket" id={@id}>
+      <span class="timeline"></span>
+      <section>
+        <div class="price-paid">
+          ${@ticket.price}
+        </div>
+        <div>
+          <span class="username">
+            {@ticket.user.username}
+          </span>
+          bought a ticket!
+          <blockquote>
+            {@ticket.comment}
+          </blockquote>
+        </div>
+      </section>
+    </div>
+    """
+  end
+
   def handle_event("validate", %{"ticket" => ticket_params}, socket) do
     socket =
       assign(socket,
@@ -130,8 +165,14 @@ defmodule RaffleyWeb.RaffleLive.Show do
     %{raffle: raffle, current_user: user} = socket.assigns
 
     case Tickets.create_ticket(raffle, user, ticket_params) do
-      {:ok, _ticket} ->
-        socket = assign(socket, form: to_form(Tickets.change_ticket(%Ticket{})))
+      {:ok, ticket} ->
+        socket =
+          socket
+          |> assign(form: to_form(Tickets.change_ticket(%Ticket{})))
+          |> stream_insert(:tickets, ticket, at: 0)
+          |> update(:ticket_count, &(&1 + 1))
+          |> update(:ticket_sum, &(&1 + ticket.price))
+
         {:noreply, socket}
 
       {:error, %Ecto.Changeset{} = changeset} ->
